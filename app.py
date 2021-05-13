@@ -6,7 +6,7 @@ import json, datetime
 from utilities.myutil import get_state_id, get_district_id
 
 # make api calls
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'}
+headers = {'User-Agent': 'User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36 Edg/90.0.818.51'}
 states_id_api_r = requests.get("https://cdn-api.co-vin.in/api/v2/admin/location/states", headers=headers)
 state_ids = pd.json_normalize(json.loads(states_id_api_r.content.decode('utf-8'))['states'])
 
