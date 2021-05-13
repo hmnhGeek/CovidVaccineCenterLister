@@ -24,6 +24,7 @@ select_state = sidebar.selectbox(
     state_ids["state_name"].tolist()
 )
 
+
 if select_state:
     id_of_state = get_state_id(state_ids, select_state)
     district_id_api_r = requests.get(f'https://cdn-api.co-vin.in/api/v2/admin/location/districts/{id_of_state}', headers=headers)
