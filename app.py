@@ -9,7 +9,7 @@ from utilities.myutil import get_state_id, get_district_id
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'}
 states_id_api_r = requests.get("https://cdn-api.co-vin.in/api/v2/admin/location/states", headers=headers)
 
-state_ids = pd.json_normalize(states_id_api_r.json()['states'])
+state_ids = pd.json_normalize(json.loads(states_id_api_r.content.decode('utf-8'))['states'])
 
 st.markdown("# COVID Vaccine Scheduler")
 st.markdown("""View vaccination centers and appointments. Start by selecting state on left panel. 
@@ -27,7 +27,7 @@ select_state = sidebar.selectbox(
 if select_state:
     id_of_state = get_state_id(state_ids, select_state)
     district_id_api_r = requests.get(f'https://cdn-api.co-vin.in/api/v2/admin/location/districts/{id_of_state}', headers=headers)
-    district_ids = pd.json_normalize(district_id_api_r.json()["districts"])
+    district_ids = pd.json_normalize(json.loads(district_id_api_r.content.decode('utf-8'))["districts"])
 
     select_district = sidebar.selectbox(
         "Select district",
@@ -43,7 +43,7 @@ if select_state:
 
         apt_date = apt_date.strftime("%d-%m-%Y")
         appointments_by_district_id_api_r = requests.get(f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id={id_of_district}&date={apt_date}', headers=headers)
-        appointments_df = pd.json_normalize(appointments_by_district_id_api_r.json()["sessions"]) #.drop("session_id", axis=1, inplace=True)
+        appointments_df = pd.json_normalize(json.loads(appointments_by_district_id_api_r.content.decode('utf-8'))["sessions"]) #.drop("session_id", axis=1, inplace=True)
 
         appointments_df.rename({'long': 'lon'}, axis=1, inplace=True)
 
