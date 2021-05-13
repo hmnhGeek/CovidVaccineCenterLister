@@ -7,7 +7,7 @@ from utilities.myutil import get_state_id, get_district_id
 
 # make api calls
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'}
-states_id_api_r = requests.get("https://cdn-api.co-vin.in/api/v2/admin/location/states", headers=headers)
+states_id_api_r = requests.get("https://cdn-api.co-vin.in/api/v2/admin/location/states", headers=headers, verify=False)
 st.title(states_id_api_r.status_code)
 # state_ids = pd.json_normalize(json.loads(states_id_api_r.content.decode('utf-8'))['states'])
 
