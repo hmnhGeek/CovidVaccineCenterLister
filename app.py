@@ -27,79 +27,80 @@ select_state = sidebar.selectbox(
 if select_state:
     id_of_state = get_state_id(state_ids, select_state)
     district_id_api_r = requests.get(f'https://cdn-api.co-vin.in/api/v2/admin/location/districts/{id_of_state}', headers=headers)
-    district_ids = pd.json_normalize(json.loads(district_id_api_r.content.decode('utf-8'))["districts"])
+    st.title(district_id_api_r.status_code)
+    # district_ids = pd.json_normalize(json.loads(district_id_api_r.content.decode('utf-8'))["districts"])
 
-    select_district = sidebar.selectbox(
-        "Select district",
-        district_ids["district_name"].tolist()
-    )
+    # select_district = sidebar.selectbox(
+    #     "Select district",
+    #     district_ids["district_name"].tolist()
+    # )
 
-    if select_district:
-        id_of_district = get_district_id(district_ids, select_district)
-        apt_date = sidebar.date_input(
-            "Choose a date for appointment",
-            datetime.datetime.now()
-        )
+    # if select_district:
+    #     id_of_district = get_district_id(district_ids, select_district)
+    #     apt_date = sidebar.date_input(
+    #         "Choose a date for appointment",
+    #         datetime.datetime.now()
+    #     )
 
-        apt_date = apt_date.strftime("%d-%m-%Y")
-        appointments_by_district_id_api_r = requests.get(f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id={id_of_district}&date={apt_date}', headers=headers)
-        appointments_df = pd.json_normalize(json.loads(appointments_by_district_id_api_r.content.decode('utf-8'))["sessions"]) #.drop("session_id", axis=1, inplace=True)
+    #     apt_date = apt_date.strftime("%d-%m-%Y")
+    #     appointments_by_district_id_api_r = requests.get(f'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id={id_of_district}&date={apt_date}', headers=headers)
+    #     appointments_df = pd.json_normalize(json.loads(appointments_by_district_id_api_r.content.decode('utf-8'))["sessions"]) #.drop("session_id", axis=1, inplace=True)
 
-        appointments_df.rename({'long': 'lon'}, axis=1, inplace=True)
+    #     appointments_df.rename({'long': 'lon'}, axis=1, inplace=True)
 
-        st.header("All Available appointments")
-        st.subheader(f'State: {select_state}, District: {select_district}')
-        st.subheader(f'Appointment Date: {apt_date}')
-        st.dataframe(appointments_df)
+    #     st.header("All Available appointments")
+    #     st.subheader(f'State: {select_state}, District: {select_district}')
+    #     st.subheader(f'Appointment Date: {apt_date}')
+    #     st.dataframe(appointments_df)
 
-        try:
-            st.header("Vaccine distribution")
+    #     try:
+    #         st.header("Vaccine distribution")
 
-            st.bar_chart(appointments_df.groupby("vaccine").sum()["available_capacity"])
+    #         st.bar_chart(appointments_df.groupby("vaccine").sum()["available_capacity"])
 
-            st.header("Vaccination locations")
-            st.write("The locations shown are subjected to the co-ordinates provided in the data.")
-            st.map(appointments_df[["lat", "lon"]])
+    #         st.header("Vaccination locations")
+    #         st.write("The locations shown are subjected to the co-ordinates provided in the data.")
+    #         st.map(appointments_df[["lat", "lon"]])
 
-            try:
-                st.header("Filter data")
+    #         try:
+    #             st.header("Filter data")
 
-                b = st.selectbox(
-                    "Filter by block",
-                    ["All"] + appointments_df["block_name"].unique().tolist()
-                )
+    #             b = st.selectbox(
+    #                 "Filter by block",
+    #                 ["All"] + appointments_df["block_name"].unique().tolist()
+    #             )
 
-                v = st.selectbox(
-                    "Select a vaccine",
-                    ["All"]+appointments_df["vaccine"].unique().tolist()
-                )
+    #             v = st.selectbox(
+    #                 "Select a vaccine",
+    #                 ["All"]+appointments_df["vaccine"].unique().tolist()
+    #             )
 
-                a = st.selectbox(
-                    "Select min. age limit",
-                    ["All"]+appointments_df["min_age_limit"].unique().tolist()
-                )
+    #             a = st.selectbox(
+    #                 "Select min. age limit",
+    #                 ["All"]+appointments_df["min_age_limit"].unique().tolist()
+    #             )
                 
-                if b != "All" and v != "All"  and a != "All":
-                    st.dataframe(appointments_df[(appointments_df["vaccine"] == v) & (appointments_df["min_age_limit"] == a) & (appointments_df["block_name"] == b)])
-                elif b != "All" and v != "All" and a == "All":
-                    st.dataframe(appointments_df[(appointments_df["block_name"] == b) & (appointments_df["vaccine"] == v)])
-                elif b != "All" and v == "All" and a != "All":
-                    st.dataframe(appointments_df[(appointments_df["block_name"] == b) & (appointments_df["min_age_limit"] == a)])
-                elif b != "All" and v == "All" and a == "All":
-                    st.dataframe(appointments_df[(appointments_df["block_name"] == b)])
-                elif b == "All" and v != "All" and a != "All":
-                    st.dataframe(appointments_df[(appointments_df["vaccine"] == v) & (appointments_df["min_age_limit"] == a)])
-                elif b == "All" and v != "All" and a == "All":
-                    st.dataframe(appointments_df[(appointments_df["vaccine"] == v)])
-                elif b == "All" and v == "All" and a != "All":
-                    st.dataframe(appointments_df[(appointments_df["min_age_limit"] == a)])
-                elif b == "All" and v == "All" and a == "All":
-                    st.dataframe(appointments_df)
+    #             if b != "All" and v != "All"  and a != "All":
+    #                 st.dataframe(appointments_df[(appointments_df["vaccine"] == v) & (appointments_df["min_age_limit"] == a) & (appointments_df["block_name"] == b)])
+    #             elif b != "All" and v != "All" and a == "All":
+    #                 st.dataframe(appointments_df[(appointments_df["block_name"] == b) & (appointments_df["vaccine"] == v)])
+    #             elif b != "All" and v == "All" and a != "All":
+    #                 st.dataframe(appointments_df[(appointments_df["block_name"] == b) & (appointments_df["min_age_limit"] == a)])
+    #             elif b != "All" and v == "All" and a == "All":
+    #                 st.dataframe(appointments_df[(appointments_df["block_name"] == b)])
+    #             elif b == "All" and v != "All" and a != "All":
+    #                 st.dataframe(appointments_df[(appointments_df["vaccine"] == v) & (appointments_df["min_age_limit"] == a)])
+    #             elif b == "All" and v != "All" and a == "All":
+    #                 st.dataframe(appointments_df[(appointments_df["vaccine"] == v)])
+    #             elif b == "All" and v == "All" and a != "All":
+    #                 st.dataframe(appointments_df[(appointments_df["min_age_limit"] == a)])
+    #             elif b == "All" and v == "All" and a == "All":
+    #                 st.dataframe(appointments_df)
 
 
-                st.dataframe(appointments_df[(appointments_df["vaccine"] == chosen_vaccine) & (appointments_df["min_age_limit"] == agelimit) & (appointments_df["block_name"] == block)])
-            except:
-                pass
+    #             st.dataframe(appointments_df[(appointments_df["vaccine"] == chosen_vaccine) & (appointments_df["min_age_limit"] == agelimit) & (appointments_df["block_name"] == block)])
+    #         except:
+    #             pass
             
-        except:
-            pass
+    #     except:
+    #         pass
